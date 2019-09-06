@@ -1,0 +1,8 @@
+//HamX16 BIOS v0
+jmp #post
+
+//Utilities
+
+#post:
+	
+	jmp #post
