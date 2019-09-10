@@ -40,17 +40,14 @@ int main() {
 	unsigned int dataSize = ftell(data);
 	fseek(data, 0, SEEK_SET);
 	fread(rom, dataSize, 1, data);
-
-	rom[2] = 4 << 1;
-	//rom[2] = 3 << 1;
+	fclose(data);
 
 	//Loop
 	while(execute) {
-		regs[0] += 2;
-		printf("%i\n", regs[0]);
 		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
 		updateDevices((unsigned short*)dio, &regs[3]);
-		if(regs[0] > mem? (ramSize - 1) : (romSize - 1)) regs[0] = mem? (ramSize - 1): (romSize - 1); //Fix and add safety measure
+		//printf("%i\n", regs[0]);
+		//if(regs[0] <= (mem? (ramSize - 2) : (romSize - 2))) regs[0] += 2;
 	}
 
 	return 0;

@@ -1,8 +1,7 @@
-//HamX16 BIOS v0
-jmp #post
+#loop:
+	nop
+	dat arg1; 0x0001
+	deb arg1
+	jmp #loop
 
-//Utilities
-
-#post:
-	
-	jmp #post
+hlt
