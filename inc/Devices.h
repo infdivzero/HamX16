@@ -2,6 +2,8 @@
 #ifndef DEVICES_H
 #define DEVICES_H
 
+#include <SDL2/SDL.h>
+
 /*Devices to emulate:
  * buzzer
  * 	-simple audio output, generates single tone beeps n amount of times when it receives a call state
@@ -20,12 +22,21 @@
 
 //Bit layout for dio: 00 000000 00000000 - select and interrupt signals, instruction, and data. However, devices can use this hwoever they are written to
 
+SDL_Window *win;
+
 void initDevices(unsigned short *dio) {
 	//Some dll loading code, or maybe lua instead
+	SDL_Init(SDL_INIT_VIDEO);
+	win = SDL_CreateWindow("a", 0, 0, 800, 600, SDL_WINDOW_VISIBLE);
 }
 
 void updateDevices(unsigned short *dio, unsigned short *flgReg) {
 	//
+}
+
+void end() {
+	SDL_DestroyWindow(win);
+	SDL_Quit();
 }
 
 #endif

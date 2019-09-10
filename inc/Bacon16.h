@@ -38,8 +38,6 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 	arg2 = rByte & 0b00001111;
 	imm = ((lByte & 0b00000001) << 8) | rByte;
 
-	//printf("%x\n", opcode);
-
 	//Execute opcode
 	switch(opcode) {
 		case 0x01: { //clr

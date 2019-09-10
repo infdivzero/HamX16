@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-int main() {
+int main(int argc, char *argv[]) {
 	//Vars - keep the memory sizes as multiples of 2 else the emulator will crash if pc + 1 > memSize. The last two bytes of each memory array contains a hard coded jump instruction to pc = 0
 	unsigned int ramSize = 2048;
 	unsigned int romSize = 512;
@@ -49,6 +49,8 @@ int main() {
 		//printf("%i\n", regs[0]);
 		//if(regs[0] <= (mem? (ramSize - 2) : (romSize - 2))) regs[0] += 2;
 	}
+	
+	end();
 
 	return 0;
 }
