@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 	//Loop
 	while(execute) {
 		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
-		updateDevices((unsigned short*)dio, &regs[3]);
+		updateDevices((unsigned short*)dio, &regs[3], &execute);
 		//printf("%i\n", regs[0]);
 		//if(regs[0] <= (mem? (ramSize - 2) : (romSize - 2))) regs[0] += 2;
 	}

@@ -154,6 +154,7 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 			break;
 		}
 		case 0x16: { //jeq
+			printf("%i\n", 123);
 			if((mode & 0b01)? !(regs[3] & 0b0000010) : (regs[3] & 0b0000010)) regs[0] = (mode >> 1)? imm : regs[arg1];
 			jumped = 1;
 			break;

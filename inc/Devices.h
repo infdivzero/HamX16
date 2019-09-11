@@ -23,19 +23,32 @@
 //Bit layout for dio: 00 000000 00000000 - select and interrupt signals, instruction, and data. However, devices can use this hwoever they are written to
 
 SDL_Window *win;
+SDL_Renderer *ren;
+SDL_Event ev;
 
 void initDevices(unsigned short *dio) {
 	//Some dll loading code, or maybe lua instead
 	SDL_Init(SDL_INIT_VIDEO);
-	win = SDL_CreateWindow("a", 0, 0, 800, 600, SDL_WINDOW_VISIBLE);
+	//win = SDL_CreateWindow("a", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+	//ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 }
 
-void updateDevices(unsigned short *dio, unsigned short *flgReg) {
-	//
+void updateDevices(unsigned short *dio, unsigned short *flgReg, int *execute) {
+	/*SDL_PollEvent(&ev);
+	switch(ev.type) {
+		case SDL_QUIT: {
+			*execute = 0;
+			break;
+		}
+	}
+
+	SDL_RenderClear(ren);
+	SDL_RenderPresent(ren);*/
 }
 
 void end() {
-	SDL_DestroyWindow(win);
+	//SDL_DestroyWindow(win);
+	//SDL_DestroyRenderer(ren);
 	SDL_Quit();
 }
 

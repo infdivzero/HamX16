@@ -1,7 +1,10 @@
-#loop:
-	nop
-	dat arg1; 0x0001
-	deb arg1
-	jmp #loop
+dat arg1; 1
+dat arg2; 1
+cmp arg1, arg2
 
+jeq #skip
 hlt
+#skip:
+
+add arg1, arg2
+deb acc
