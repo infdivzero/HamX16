@@ -1,10 +1,10 @@
-dat arg1; 1
-dat arg2; 1
-cmp arg1, arg2
+dat g1; 0
+dat g2; 60000
 
-jeq #skip
-hlt
-#skip:
-
-add arg1, arg2
-deb acc
+#loop:
+	cmp tim, g2
+	jneq #loop
+	add g1, one
+	mov acc, g1
+	rst
+	jmp #loop
