@@ -3,12 +3,17 @@
 #define BACON16_H
 
 #include <stdio.h>
-#include <sys/time.h>
+#include <time.h>
+//#include <sys/time.h>
 
 void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, unsigned char *rom, unsigned int ramSize, unsigned int romSize, int *mem, int *execute) {
-	struct timespec tsp;
-	unsigned char lmilli = 0;
-	unsigned char milli = 0;
+	//struct timespec tsp;
+	static unsigned char lmilli = 0;
+	static unsigned char milli = 0;
+	//static unsigned char secs = 0;
+	/*time_t timet;
+	static unsigned char lmsecs = 0;
+	static unsigned char msecs = 0;*/
 	unsigned char mode, opcode, arg1, arg2, lByte, rByte;
 	unsigned short imm;
 	int jumped = 0;
@@ -16,11 +21,17 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 	//Reset constants
 	regs[4] = 1;
 
-	clock_gettime(CLOCK_MONOTONIC, &tsp);
+	lmilli = milli;
+	milli = clock();
+	if(milli > lmilli) regs[5]++;
+	//timet = clock();
+	//printf("%li\n", timet);
+	/*clock_gettime(CLOCK_MONOTONIC, &tsp);
 	lmilli = milli;
 	milli = tsp.tv_nsec / 1000000;
 	if(milli > lmilli) regs[5]++;
-	printf("%i\n", regs[5]);
+	//if(secs >= 1000) regs[5]++;
+	//printf("%i\n", regs[5]);*/
 
 	ram[ramSize - 2] = (0b10 << 6) | 20 << 1;
 	ram[ramSize - 1] = 0;

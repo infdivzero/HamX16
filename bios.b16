@@ -1,10 +1,18 @@
-dat g1; 0
-dat g2; 60000
+dat g1; 10000 //Countdown timer
+dat g2; 0  	  //Second to quit at
+dat g3; 0  	  //Last millisecond
+dat g4; 0  	  //Current millisecond
+dat g5; 0 	  //Timer display
+dat g6; 3E8	  //1000
 
 #loop:
-	cmp tim, g2
-	jneq #loop
-	add g1, one
-	mov acc, g1
-	rst
+	
 	jmp #loop
+
+#dec:
+	sub g1, one
+	mov acc, g1
+	jmp #loop
+
+#end:
+	hlt
