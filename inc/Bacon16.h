@@ -4,19 +4,12 @@
 
 #include <stdio.h>
 #include <time.h>
-//#include <sys/time.h>
 
 void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, unsigned char *rom, unsigned int ramSize, unsigned int romSize, int *mem, int *execute) {
-	//struct timespec tsp;
 	static unsigned char lmilli = 0;
 	static unsigned char milli = 0;
-	//static unsigned char secs = 0;
-	/*time_t timet;
-	static unsigned char lmsecs = 0;
-	static unsigned char msecs = 0;*/
 	unsigned char mode, opcode, arg1, arg2, lByte, rByte;
 	unsigned short imm;
-	int jumped = 0;
 
 	//Reset constants
 	regs[4] = 1;
@@ -24,14 +17,6 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 	lmilli = milli;
 	milli = clock();
 	if(milli > lmilli) regs[5]++;
-	//timet = clock();
-	//printf("%li\n", timet);
-	/*clock_gettime(CLOCK_MONOTONIC, &tsp);
-	lmilli = milli;
-	milli = tsp.tv_nsec / 1000000;
-	if(milli > lmilli) regs[5]++;
-	//if(secs >= 1000) regs[5]++;
-	//printf("%i\n", regs[5]);*/
 
 	ram[ramSize - 2] = (0b10 << 6) | 20 << 1;
 	ram[ramSize - 1] = 0;
@@ -142,6 +127,7 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 			break;
 		}
 		case 0x13: { //cmp
+			regs[3] = 0;
 			if(mode >> 1) {
 				if(regs[2] >  imm) regs[3] |= 0b0000001;
 				if(regs[2] == imm) regs[3] |= 0b0000010;
@@ -157,55 +143,47 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 		}
 		case 0x14: { //jmp - come up with a way to create dynamic addresses in the assembler (os has prg offset so prg uses (jmp offset + address)?)
 			regs[0] = (mode >> 1)? imm : regs[arg1];
-			jumped = 1;
 			break;
 		}
 		case 0x15: { //jal
 			if((mode & 0b01)? !(regs[3] & 0b0000001) : (regs[3] & 0b0000001)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
-				jumped = 1;
 			}
 			break;
 		}
 		case 0x16: { //jeq
 			if((mode & 0b01)? !(regs[3] & 0b0000010) : (regs[3] & 0b0000010)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
-				jumped = 1;
 			}
 			break;
 		}
 		case 0x17: { //jze
 			if((mode & 0b01)? !(regs[3] & 0b0000100) : (regs[3] & 0b0000100)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
-				jumped = 1;
 			}
 			break;
 		}
 		case 0x18: { //jof
 			if((mode & 0b01)? !(regs[3] & 0b0001000) : (regs[3] & 0b0001000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
-				jumped = 1;
 			}
 			break;
 		}
 		case 0x19: { //juf
 			if((mode & 0b01)? !(regs[3] & 0b0010000) : (regs[3] & 0b0010000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
-				jumped = 1;
 			}
 			break;
 		}
 		case 0x1A: { //jng
 			if((mode & 0b01)? !(regs[3] & 0b0100000) : (regs[3] & 0b0100000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
-				jumped = 1;
 			}
 			break;
 		}
 		case 0x1B: { //jin
 			if((mode & 0b01)? !(regs[3] & 0b1000000) : (regs[3] & 0b1000000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
-				jumped = 1;
 			}
 			break;
 		}
@@ -223,7 +201,7 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 		}
 	}
 
-	if(!jumped && (regs[0] <= (*mem? (ramSize - 2) : (romSize - 2)))) regs[0] += 2;
+	if((regs[0] <= (*mem? (ramSize - 2) : (romSize - 2)))) regs[0] += 2;
 }
 
 #endif
