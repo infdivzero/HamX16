@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 	//Initialize
 	initDevices((unsigned short*)dio);
 
-	for(unsigned int i = 0; i < romSize; i++) {
+	for(unsigned int i = 0; i < romSize; i++) { //These are temporary
 		rom[i] = 0;
 	}
 
@@ -46,8 +46,6 @@ int main(int argc, char *argv[]) {
 	while(execute) {
 		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
 		updateDevices((unsigned short*)dio, &regs[3], &execute);
-		//printf("%i\n", regs[0]);
-		//if(regs[0] <= (mem? (ramSize - 2) : (romSize - 2))) regs[0] += 2;
 	}
 	
 	end();
