@@ -5,3 +5,4 @@ assemble.bat
 Debug/src/main.o
 /Debug/
 *.dll
+*.bak

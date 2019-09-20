@@ -96,7 +96,11 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 			break;
 		}
 		case 0x0C: { //div
-			regs[1] = (mode >> 1)? (regs[2] / imm) : (regs[arg1] / regs[arg2]);
+			if(((mode >> 1)? imm : regs[arg2]) != 0) {
+				regs[1] = (mode >> 1)? (regs[2] / imm) : (regs[arg1] / regs[arg2]);
+			} else {
+				regs[1] = 0;
+			}
 			if(mode & 0b01) regs[1] = ~regs[1] + 1;
 			break;
 		}

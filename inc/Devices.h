@@ -33,7 +33,7 @@ SDL_Event ev;
 const int AMPLITUDE = 28000;
 const int SAMPLE_RATE = 44100;
 
-void audio_callback(void *user_data, Uint8 *raw_buffer, int bytes) {
+/*void audio_callback(void *user_data, Uint8 *raw_buffer, int bytes) {
     Sint16 *buffer = (Sint16*)raw_buffer;
     int length = bytes / 2; // 2 bytes per sample for AUDIO_S16SYS
     int &sample_nr = ((int*)user_data);
@@ -43,7 +43,7 @@ void audio_callback(void *user_data, Uint8 *raw_buffer, int bytes) {
         double time = (double)sample_nr / (double)SAMPLE_RATE;
         buffer[i] = (Sint16)(AMPLITUDE * sin(2.0f * M_PI * 441.0f * time)); // render 441 HZ sine wave
     }
-}
+}*/
 
 void initDevices(unsigned short *dio) {
 	//Some dll loading code, or maybe lua instead. Will be hard coded for now

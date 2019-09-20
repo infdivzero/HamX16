@@ -1,18 +1,19 @@
 //Countdown timer
 
-#start: //the hard coded nop in asm causes div by 0
+#start:
 
 dat g1; 11000
 dat g2; 0
 dat g4; 0
-dat g5; 0x3E8
+dat g5; 1000
 
 #loop:
-	mov g2, g3
+	mov g3, g3
 	mov tim, g2
 	cmp g2, g3
 	jnal #print
 	
+	clr tim
 	sub g1, one
 	mov acc, g1
 	
@@ -22,5 +23,7 @@ dat g5; 0x3E8
 	
 	cmp g1, g4
 	jneq #loop
+
+//hlt
 
 jmp #start
