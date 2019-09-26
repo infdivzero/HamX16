@@ -29,9 +29,9 @@ long_line_column=72
 
 [files]
 current_page=2
-FILE_NAME_0=648;C;0;EUTF-8;1;1;0;E%3A%5CC%2B%2B%20stuff%5CHamX16%5Cmain.c;0;4
+FILE_NAME_0=869;C;0;EUTF-8;1;1;0;E%3A%5CC%2B%2B%20stuff%5CHamX16%5Cmain.c;0;4
 FILE_NAME_1=2576;C++;0;EUTF-8;1;1;0;E%3A%5CC%2B%2B%20stuff%5CHamX16%5Cinc%5CBacon16.h;0;4
-FILE_NAME_2=1977;C++;0;EUTF-8;1;1;0;E%3A%5CC%2B%2B%20stuff%5CHamX16%5Cinc%5CDevices.h;0;4
+FILE_NAME_2=2345;C++;0;EUTF-8;1;1;0;E%3A%5CC%2B%2B%20stuff%5CHamX16%5Cinc%5CDevices.h;0;4
 
 [build-menu]
 C++FT_00_LB=_Compile
