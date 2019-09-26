@@ -40,17 +40,12 @@ typedef struct {
 	//The vram is divided into 2 render buffers and a font page. There are 95 ASCII characters to support
 	unsigned char vram[(4 * (400 * 240) * 2) + (95 * 64 * 4)]; //color format * total resolution area in pixels * number of buffer pages + font page size. bufferAccess = (buffer * (y * resW + x) + rgbaSelect)
 	unsigned char vrom[1024];
-	unsigned char regs[16]; //Required regs: pc, acc, tmp, buff, cbuf, page, id, idp
+	unsigned char regs[16];
 	SDL_Surface *buffers[2];
-	//Registers:
-	//	-pc
-	//	-acc
-	//	-tmp
-	//	-buff: selects the current render buffer
-	//	-cbuf: stores the render color
-	//	-page: ???
-	//	-id: stores the currently selected id byte pair
-	//	-idp: stores the rom mem pointer to the id info
+	/*Registers:
+	 * -pc-
+	 * acc-tmp-buff: selects the current render buffer-cbuf: stores the render color-id: stores the currently selected id byte pair-idp: stores the rom mem pointer to the id info
+	* */
 } gpu;
 
 //Device initialization funtions
