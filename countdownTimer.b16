@@ -1,0 +1,31 @@
+//Countdown timer
+
+#start:
+
+dat g1; 11000
+dat g2; 0
+dat g4; 0
+dat g5; 1000
+
+#loop:
+	mov g2, g3
+	mov tim, g2
+	cmp g2, g3
+	jnal #print //Fix speed
+	
+	//clr tim
+	sub g1, one
+	mov acc, g1
+	
+	#print:
+	div g1, g5
+	deb acc
+	
+	cmp g1, g4
+	jneq #loop
+
+//hlt
+
+jmp #start
+
+//optimize by subtracting the milliseonds passed

@@ -1,29 +1,17 @@
-//Countdown timer
-
-#start:
+//Countdown timer v2
 
 dat g1; 11000
-dat g2; 0
-dat g4; 0
-dat g5; 1000
+dat g2; 1000
+dat g3; 100
 
 #loop:
-	mov g3, g3
-	mov tim, g2
-	cmp g2, g3
-	jnal #print
-	
-	clr tim
-	sub g1, one
-	mov acc, g1
-	
-	#print:
-	div g1, g5
+	div g1, g2
 	deb acc
 	
-	cmp g1, g4
-	jneq #loop
+	sub g1, tim
+	mov acc, g1
+	clr tim
+	cmp g1, g3
+	jal #loop
 
-//hlt
-
-jmp #start
+hlt
