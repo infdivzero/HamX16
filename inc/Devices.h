@@ -36,39 +36,45 @@ const unsigned int resW = 400, resH = 240;
 unsigned int select = 0; //Selects which device has been called. ID assignment is hard coded for now
 
 //Device data
-typedef struct {
-	//The vram is divided into 2 render buffers and a font page. There are 95 ASCII characters to support
-	unsigned char vram[(4 * (400 * 240) * 2) + (95 * 64 * 4)]; //color format * total resolution area in pixels * number of buffer pages + font page size. bufferAccess = (buffer * (y * resW + x) + rgbaSelect)
-	unsigned char vrom[1024];
+typedef struct { //The gpu will be monochrome until a better version can be written
+	//The vram is divided into 2 render buffers and 8kb for other things
+	//framebuffer: w * h / 8 (size of display, with each bit representing a pixel)
+	//fonts: char count * 8 (each char is 8x8 requiring 8 bytes)
+	unsigned char vram[32000]; //total resolution area * framebuffer count. bufferAccess = ((buffer + 1) * (y * resW + x)). 32 kilobytes
 	unsigned char regs[16];
-	SDL_Surface *buffers[2];
+	unsigned short display[400 * 240];
+	//SDL_Surface *buffer; //Because the display will be monochrome, a buffer texture won't be needed as a pixel array will do
 	/*Registers:
-	 * -pc-
-	 * acc-tmp-buff: selects the current render buffer-cbuf: stores the render color-id: stores the currently selected id byte pair-idp: stores the rom mem pointer to the id info
-	* */
+	 * -pc
+	 * -acc
+	 * -tmp
+	 * -buf: selects the current render buffer
+	 * -col: stores the render color
+	 * -typ: constant register which stores the device type ID
+	 * -stp: stream pointer, incremented each stream cycle (work backwards or forwards in memory streaming?)
+	 */
 } gpu;
 
 //Device initialization funtions
 void init_gpu() {
-	//load video BIOS
-	//gpu uses instruction set similar to cpu
+	//
 }
 
 //Device update funtions
 void update_gpu() {
 	if(select == 0) {
 		//Process instructions
+		//When in stream mode, the gpu copies ... to the stm register
 		//Instructions are received as a 16 bit register
-		//	-mov   arg1, arg2		- moves register 1 to register 2
-		//	-getb0 vram[arg1], arg2 - moves an address in the portion of vram used by buffer 0 to arg2
-		//	-getb1 vram[arg1], arg2 - moves an address in the portion of vram used by buffer 1 to arg2
-		//	-getf  vram[arg1], arg2 - moves an address in the portion of vram used by the font page to arg2
-		//	-setb0 arg1, vram[arg2] - moves arg1 to an address in the portion of vram used by buffer 0
-		//	-setb1 arg1, vram[arg2] - moves arg1 to an address in the portion of vram used by buffer 1
-		//	-setf  arg1, vram[arg2]	- moves arg1 to an address in the portion of vram used by the font page
-		//	-stm   arg1				- sets the gpu to data stream mode. The first bit of the register specifies if the stream is to receive data or send it back to the cpu, while the remaining bits select the register to stream
-		//	-swp					- toggles between the two render buffers
-		//	-asc   arg1				- renders the character at vram address arg1
+		//	-mov   arg1, arg2			  - moves register 1 to register 2
+		//	-getb0 vram[arg1], arg2 	  - moves an address in the portion of vram used by buffer 0 to arg2
+		//	-getb1 vram[arg1], arg2 	  - moves an address in the portion of vram used by buffer 1 to arg2
+		//	-getf  vram[arg1], arg2 	  - moves an address in the portion of vram used by the font page to arg2
+		//	-setb0 arg1, vram[arg2] 	  - moves arg1 to an address in the portion of vram used by buffer 0
+		//	-setb1 arg1, vram[arg2] 	  - moves arg1 to an address in the portion of vram used by buffer 1
+		//	-setf  arg1, vram[arg2]		  - moves arg1 to an address in the portion of vram used by the font page
+		//	-stm   arg1					  - sets the gpu to data stream mode. The first bit of the register specifies if the stream is to receive data or send it back to the cpu, while the remaining bits select the memory location to start streaming at
+		//	-char  arg1, arg2			  - renders the character with ascii code arg1 at vram address arg2 (uses the current buffer)
 	}
 	//render output
 }
