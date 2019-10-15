@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <time.h>
 
-void execInstr(unsigned short *regs, unsigned int *dio, unsigned char *ram, unsigned char *rom, unsigned int ramSize, unsigned int romSize, int *mem, int *execute) {
+void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, unsigned char *rom, unsigned int ramSize, unsigned int romSize, int *mem, int *execute) {
 	static unsigned char lmilli = 0;
 	static unsigned char milli = 0;
 	unsigned char mode, opcode, arg1, arg2, lByte, rByte;
@@ -148,93 +148,58 @@ void execInstr(unsigned short *regs, unsigned int *dio, unsigned char *ram, unsi
 			break;
 		}
 		case 0x15: { //jal
-			if((mode & 0b01)? !(regs[3] & 0b0000000000000001) : (regs[3] & 0b0000000000000001)) {
+			if((mode & 0b01)? !(regs[3] & 0b0000001) : (regs[3] & 0b0000001)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
 			}
 			break;
 		}
 		case 0x16: { //jeq
-			if((mode & 0b01)? !(regs[3] & 0b0000000000000010) : (regs[3] & 0b0000000000000010)) {
+			if((mode & 0b01)? !(regs[3] & 0b0000010) : (regs[3] & 0b0000010)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
 			}
 			break;
 		}
 		case 0x17: { //jze
-			if((mode & 0b01)? !(regs[3] & 0b0000000000000100) : (regs[3] & 0b0000000000000100)) {
+			if((mode & 0b01)? !(regs[3] & 0b0000100) : (regs[3] & 0b0000100)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
 			}
 			break;
 		}
 		case 0x18: { //jof
-			if((mode & 0b01)? !(regs[3] & 0b0000000000001000) : (regs[3] & 0b0000000000001000)) {
+			if((mode & 0b01)? !(regs[3] & 0b0001000) : (regs[3] & 0b0001000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
 			}
 			break;
 		}
 		case 0x19: { //juf
-			if((mode & 0b01)? !(regs[3] & 0b0000000000010000) : (regs[3] & 0b0000000000010000)) {
+			if((mode & 0b01)? !(regs[3] & 0b0010000) : (regs[3] & 0b0010000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
 			}
 			break;
 		}
 		case 0x1A: { //jng
-			if((mode & 0b01)? !(regs[3] & 0b0000000000100000) : (regs[3] & 0b0000000000100000)) {
+			if((mode & 0b01)? !(regs[3] & 0b0100000) : (regs[3] & 0b0100000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
 			}
 			break;
 		}
-		case 0x1B: { //ji0
-			if((mode & 0b01)? !(regs[3] & 0b0000000001000000) : (regs[3] & 0b0000000001000000)) {
+		case 0x1B: { //jin
+			if((mode & 0b01)? !(regs[3] & 0b1000000) : (regs[3] & 0b1000000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
 			}
 			break;
 		}
-		case 0x1C: { //ji1
-			if((mode & 0b01)? !(regs[3] & 0b0000000010000000) : (regs[3] & 0b0000000010000000)) {
-				regs[0] = (mode >> 1)? imm : regs[arg1];
-			}
+		case 0x1C: { //sdr
+			dio[regs[arg2]] = regs[arg1];
 			break;
 		}
-		case 0x1D: { //ji2
-			if((mode & 0b01)? !(regs[3] & 0b0000000100000000) : (regs[3] & 0b0000000100000000)) {
-				regs[0] = (mode >> 1)? imm : regs[arg1];
-			}
-			break;
-		}
-		case 0x1E: { //ji3
-			if((mode & 0b01)? !(regs[3] & 0b0000001000000000) : (regs[3] & 0b0000001000000000)) {
-				regs[0] = (mode >> 1)? imm : regs[arg1];
-			}
-			break;
-		}
-		case 0x1F: { //ji4
-			if((mode & 0b01)? !(regs[3] & 0b0000010000000000) : (regs[3] & 0b0000010000000000)) {
-				regs[0] = (mode >> 1)? imm : regs[arg1];
-			}
-			break;
-		}
-		case 0x20: { //ji5
-			if((mode & 0b01)? !(regs[3] & 0b0000100000000000) : (regs[3] & 0b0000100000000000)) {
-				regs[0] = (mode >> 1)? imm : regs[arg1];
-			}
-			break;
-		}
-		case 0x21: { //jin
-			if((mode & 0b01)? !(regs[3] & 0b0100000000000000) : (regs[3] & 0b0100000000000000)) {
-				regs[0] = (mode >> 1)? imm : regs[arg1];
-			}
-			break;
-		}
-		case 0x22: { //sdr
-			dio[regs[arg2]] = 0b100000000000000000 | regs[arg1]; //0b100000000000000000 - 10 0000000000000000 - device control bits, data
-			break;
-		}
-		case 0x23: { //gdr
+		case 0x1D: { //gdr
 			regs[arg2] = dio[regs[arg1]];
 			break;
 		}
-		case 0x24: { //deb
+		case 0x1E: { //deb
 			printf("%i\n", regs[arg1]);
+			fflush(stdout);
 			break;
 		}
 	}

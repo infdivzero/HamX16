@@ -9,18 +9,18 @@ int main(int argc, char *argv[]) {
 	unsigned int ramSize = 2048;
 	unsigned int romSize = 1024;
 	unsigned int regCount = 16;
-	unsigned int dioCount = 32;
+	unsigned int dioCount = 16;
 
 	unsigned char ram[ramSize];
 	unsigned char rom[romSize];
 	unsigned short regs[regCount];
-	unsigned int dio[dioCount];
+	unsigned short dio[dioCount];
 
 	int execute = 1;
 	int mem = 0;
 
 	//Initialize
-	initDevices((unsigned int*)dio);
+	initDevices((unsigned short*)dio);
 
 	for(unsigned int i = 0; i < romSize; i++) { //These are temporary
 		rom[i] = 0;
@@ -44,8 +44,8 @@ int main(int argc, char *argv[]) {
 
 	//Loop
 	while(execute) {
-		execInstr((unsigned short*)regs, (unsigned int*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
-		updateDevices((unsigned int*)dio, &regs[3], &execute);
+		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
+		updateDevices((unsigned short*)dio, &regs[3], &execute);
 	}
 	
 	end();

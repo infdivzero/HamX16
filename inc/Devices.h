@@ -122,16 +122,16 @@ void init_gpu() {
 }
 
 //Device update funtions
-void update_gpu(unsigned int *ioReg) {
+void update_gpu(unsigned short *ioReg) {
 	if(*ioReg >> 17) {
 		//Process instructions
 		unsigned char lByte  = *ioReg >> 8;
-		unsigned char rByte  = *ioReg & 0xFF;
-		unsigned char mode   = lByte >> 6;
+		//unsigned char rByte  = *ioReg & 0xFF;
+		//unsigned char mode   = lByte >> 6;
 		unsigned char opcode = (lByte & 0b00111110) >> 1;
-		unsigned char arg1   = rByte >> 4;
-		unsigned char arg2   = rByte & 0xF;
-		unsigned short imm   = ((lByte & 1) << 8) | rByte;
+		//unsigned char arg1   = rByte >> 4;
+		//unsigned char arg2   = rByte & 0xF;
+		//unsigned short imm   = ((lByte & 1) << 8) | rByte;
 
 
 		/*Instructions (received as a 16 bit register):
@@ -202,7 +202,7 @@ void update_gpu(unsigned int *ioReg) {
 	}
 
 	//render output
-	SDL_UpdateTexture(gpu.buffer, NULL, &gpu.vram[resW * resH * 4 * 0], resW * 4);
+	SDL_UpdateTexture(gpu.buffer, NULL, &gpu.vram[resW * resH * 4 * 1], resW * 4);
 	SDL_RenderCopy(ren, gpu.buffer, NULL, NULL);
 
 	//Reset io enable bit
@@ -210,7 +210,7 @@ void update_gpu(unsigned int *ioReg) {
 }
 
 //DIO functions
-void initDevices(unsigned int *io) {
+void initDevices(unsigned short *dio) {
 	//Some dll loading code, or maybe lua instead. Will be hard coded for now
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	win = SDL_CreateWindow("HamX16", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resW, resH, SDL_WINDOW_SHOWN);
@@ -219,7 +219,7 @@ void initDevices(unsigned int *io) {
 	init_gpu();
 }
 
-void updateDevices(unsigned int *io, unsigned short *flgReg, int *execute) {
+void updateDevices(unsigned short *dio, unsigned short *flgReg, int *execute) {
 	SDL_PollEvent(&ev);
 	switch(ev.type) {
 		case SDL_QUIT: {
@@ -231,7 +231,7 @@ void updateDevices(unsigned int *io, unsigned short *flgReg, int *execute) {
 	SDL_SetRenderDrawColor(ren, 0, 0, 0, 0);
 	SDL_RenderClear(ren);
 	
-	update_gpu(&io[0]);
+	update_gpu(&dio[0]);
 	
 	SDL_RenderPresent(ren);
 
