@@ -1,9 +1,0 @@
-
-*.exe
-assemble.bat
-*.bin
-Debug/src/main.o
-/Debug/
-*.dll
-*.bak
-/Release/
