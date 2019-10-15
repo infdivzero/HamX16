@@ -7,20 +7,20 @@
 int main(int argc, char *argv[]) {
 	//Vars - keep the memory sizes as multiples of 2 else the emulator will crash if pc + 1 > memSize. The last two bytes of each memory array contains a hard coded jump instruction to pc = 0
 	unsigned int ramSize = 2048;
-	unsigned int romSize = 512;
+	unsigned int romSize = 1024;
 	unsigned int regCount = 16;
 	unsigned int dioCount = 32;
 
 	unsigned char ram[ramSize];
 	unsigned char rom[romSize];
 	unsigned short regs[regCount];
-	unsigned short dio[dioCount];
+	unsigned int dio[dioCount];
 
 	int execute = 1;
 	int mem = 0;
 
 	//Initialize
-	initDevices((unsigned short*)dio);
+	initDevices((unsigned int*)dio);
 
 	for(unsigned int i = 0; i < romSize; i++) { //These are temporary
 		rom[i] = 0;
@@ -44,8 +44,8 @@ int main(int argc, char *argv[]) {
 
 	//Loop
 	while(execute) {
-		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
-		updateDevices((unsigned short*)dio, &regs[3], &execute);
+		execInstr((unsigned short*)regs, (unsigned int*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
+		updateDevices((unsigned int*)dio, &regs[3], &execute);
 	}
 	
 	end();
