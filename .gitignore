@@ -4,3 +4,4 @@
 *.bat
 *.exe
 *.bin
+/Debug/

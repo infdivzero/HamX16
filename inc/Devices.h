@@ -36,45 +36,40 @@ const unsigned int resW = 640, resH = 400;
 
 //Device data
 struct Gpu {
-	unsigned char vram[4096000]; //total resolution area * buffer count. bufferAccess = ((buffer + 1) * (y * resW + x)). 32 kilobytes
+	unsigned char vram[4096000 /* 640 * 400 * 4 * 4 */]; //total resolution area * buffer count. bufferAccess = ((buffer + 1) * (y * resW + x)). 32 kilobytes
 	unsigned char regs[16];
 	SDL_Texture *buffer;
 
 	/*640x400 color gpu
 	 * 4 mb of vram
-	 * No programmable "shaders", gpu is fully controlled by cpu
-	 * The vram is divided into 2 framebuffers, and two texture buffers. Either or both texture buffers can be used to contain fonts
+	 * No programmable "shaders", fancy image processing is handled by cpu
+	 * The vram is divided into 2 framebuffers, and 2 texture buffers. Either or both texture buffers can be used to contain fonts
 	 * Access to every byte in vram can be achieved by setting the memory segement register to the 64kb segment to be accessed and accessing it like a normal piece of memory
 	 * Stream mode can be used to repeatedly copy data from the io register to a location in memory. This is pointed to be a register which is incremented each cycle. The gpu doesn't execute instructions during this time
 	 */
 
 	/*Registers:
-	 * -pc
-	 * -acc
 	 * -tmp
-	 * -col: stores the render color
+	 * -buf: selects which virtual buffer is to be displayed
+	 * -rsw: display resolution width
+	 * -rsh: display resolution height														buffsize = rsw * rsh * 4
 	 * -typ: constant register which stores the device type ID
 	 * -stp: stream memory pointer, incremented each stream cycle
-	 * -sts: number of bytes to stream, decremented each stream cycle
+	 * -sbt: number of bytes to stream, inaccessable 32 bit register used by stream mode
 	 */
 
-	/*Instructions (received as a 16 bit register):
-	 * -add arg1, arg2		 - currently only used by streaming instruction cycles
-	 * -sub arg1, arg2		 - currently only used by streaming instruction cycles
+	/*Instructions:
 	 * -mov arg1, arg2		 - moves register 1 to register 2
-	 * -gb0 vram[arg1], arg2 - moves an address in the portion of vram used by buffer 0 to arg2
-	 * -gb1 vram[arg1], arg2 - moves an address in the portion of vram used by buffer 1 to arg2
-	 * -gt0 vram[arg1], arg2 - moves an address in the portion of vram used by texture page 0 to arg2
-	 * -gt1 vram[arg1], arg2 - moves an address in the portion of vram used by texture page 1 to arg2
-	 * -sb0 arg1, vram[arg2] - moves arg1 to an address in the portion of vram used by buffer 0
-	 * -sb1 arg1, vram[arg2] - moves arg1 to an address in the portion of vram used by buffer 1
-	 * -st0 arg1, vram[arg2] - moves arg1 to an address in the portion of vram used by texture page 0
-	 * -st1 arg1, vram[arg2] - moves arg1 to an address in the portion of vram used by texture page 1
+	 * -gpx arg1, arg2 		 - moves four bytes at vram address arg1, arg2 to the rg and ba registers. The first bit of arg1 is unused
+	 * -spx arg1, arg2 		 - replaces four bytes at vram address arg1, arg2 with the contents of the rg and ba registers. The first bit of arg1 is unused
 	 * -cpy arg1, arg2		 - copies mem at arg1 to mem at arg2. The size register is used to specify the number of bytes to be copied
-	 * -snd arg1, arg2		 - a byte in the main memory at arg1 is copied to address arg2 in vram
-	 * -rec arg1, arg2		 - a byte in vram at arg1 is copied to address arg2 in the main memory
+	 * -str arg1, arg2		 - begins stream mode. The first bit of arg1 specifies if the stream will be to or from the gpu, while the remaining bits and arg2 specify the raw vram address from which to begin streaming. The stp register points to the last bytye in memory to finish streaming from/to. It is also incremented each cycle the gpu is in stream mode
 	 * -rst					 - sets all internal registers to zero
 	 */
+
+	//Buffer pages are arbitrary now and no longer part of the gpu
+	//any resolution up to a maximum can be specified
+	//Render offset can be specified by a register and render area is specified by the resolution. Resolution also scales the output. Dynamically scaling a texture like this will be difficult, please consider this
 } gpu;
 
 //Device initialization funtions
