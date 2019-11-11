@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
 	int mem = 0;
 
 	//Initialize
-	initDevices((unsigned short*)dio);
+	//initDevices((unsigned short*)dio);
 
 	for(unsigned int i = 0; i < romSize; i++) { //These are temporary
 		rom[i] = 0;
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 	//Loop
 	while(execute) {
 		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
-		updateDevices((unsigned short*)dio, &regs[3], &execute);
+		//updateDevices((unsigned short*)dio, &regs[3], &execute);
 	}
 	
 	end();

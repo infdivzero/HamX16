@@ -12,11 +12,11 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 	unsigned short imm;
 
 	//Reset constants
-	regs[4] = 1;
+	regs[5] = 1;
 
 	lmilli = milli;
 	milli = clock();
-	if(milli > lmilli) regs[5]++;
+	if(milli > lmilli) regs[6]++;
 
 	ram[ramSize - 2] = (0b10 << 6) | 20 << 1;
 	ram[ramSize - 1] = 0;
@@ -27,6 +27,9 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 	if(regs[0] < (*mem? (ramSize - 1) : (romSize - 1))) {
 		lByte = *mem? ram[regs[0]] : rom[regs[0]];
 		rByte = *mem? ram[regs[0] + 1] : rom[regs[0] + 1];
+	} else {
+		lByte = 0;
+		rByte = 0;
 	}
 
 	mode = lByte >> 6;
