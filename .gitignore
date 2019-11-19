@@ -5,3 +5,6 @@
 *.exe
 *.bin
 /Debug/
+/.settings/
+*.cproject
+*.project
