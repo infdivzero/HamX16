@@ -1,0 +1,3 @@
+define AAA 0xFFFF
+dat g1; AAA
+deb g1
