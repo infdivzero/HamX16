@@ -4,6 +4,7 @@
 *.bat
 *.exe
 *.bin
+*.old
 /Debug/
 /.settings/
 *.cproject
