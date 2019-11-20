@@ -54,6 +54,7 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 		}
 		case 0x04: { //mem
 			*mem = !(*mem);
+			regs[0] = 0;
 			break;
 		}
 		case 0x05: { //mov/m
