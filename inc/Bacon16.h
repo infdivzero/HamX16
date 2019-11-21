@@ -203,6 +203,7 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 		}
 		case 0x1E: { //deb
 			printf("%i\n", regs[arg1]);
+			printf("%i %i\n", ram[2], ram[3]);
 			fflush(stdout);
 			break;
 		}
