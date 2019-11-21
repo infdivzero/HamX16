@@ -10,6 +10,7 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 	static unsigned char milli = 0;
 	unsigned char mode, opcode, arg1, arg2, lByte, rByte;
 	unsigned short imm;
+	int jumped = 0;
 
 	//Reset constants
 	regs[5] = 1;
@@ -149,47 +150,55 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 		}
 		case 0x14: { //jmp
 			regs[0] = (mode >> 1)? imm : regs[arg1];
+			jumped = 1;
 			break;
 		}
 		case 0x15: { //jal
 			if((mode & 0b01)? !(regs[3] & 0b0000001) : (regs[3] & 0b0000001)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
+				jumped = 1;
 			}
 			break;
 		}
 		case 0x16: { //jeq
 			if((mode & 0b01)? !(regs[3] & 0b0000010) : (regs[3] & 0b0000010)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
+				jumped = 1;
 			}
 			break;
 		}
 		case 0x17: { //jze
 			if((mode & 0b01)? !(regs[3] & 0b0000100) : (regs[3] & 0b0000100)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
+				jumped = 1;
 			}
 			break;
 		}
 		case 0x18: { //jof
 			if((mode & 0b01)? !(regs[3] & 0b0001000) : (regs[3] & 0b0001000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
+				jumped = 1;
 			}
 			break;
 		}
 		case 0x19: { //juf
 			if((mode & 0b01)? !(regs[3] & 0b0010000) : (regs[3] & 0b0010000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
+				jumped = 1;
 			}
 			break;
 		}
 		case 0x1A: { //jng
 			if((mode & 0b01)? !(regs[3] & 0b0100000) : (regs[3] & 0b0100000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
+				jumped = 1;
 			}
 			break;
 		}
 		case 0x1B: { //jin
 			if((mode & 0b01)? !(regs[3] & 0b1000000) : (regs[3] & 0b1000000)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
+				jumped = 1;
 			}
 			break;
 		}
@@ -203,13 +212,13 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 		}
 		case 0x1E: { //deb
 			printf("%i\n", regs[arg1]);
-			printf("%i %i\n", ram[2], ram[3]);
+			//printf("%i %i\n", ram[2], ram[3]);
 			fflush(stdout);
 			break;
 		}
 	}
 
-	if((regs[0] <= (*mem? (ramSize - 2) : (romSize - 2)))) regs[0] += 2;
+	if((regs[0] <= (*mem? (ramSize - 2) : (romSize - 2))) && !jumped) regs[0] += 2;
 }
 
 #endif
