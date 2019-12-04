@@ -60,7 +60,7 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 		}
 		case 0x05: { //mov/m
 			if(mode == 0) {
-				regs[arg2] 	  = regs[arg1];
+				regs[arg2] = regs[arg1];
 			} else if(regs[arg2] < ramSize - 1) {
 				ram[regs[arg2]] = rom[regs[arg1]];
 				ram[regs[arg2] + 1] = rom[regs[arg1] + 1];
