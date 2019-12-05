@@ -3,6 +3,7 @@
 #include <Devices.h>
 
 #include <stdio.h>
+#include <pthread.h>
 
 int main(int argc, char *argv[]) {
 	//Vars - keep the memory sizes as multiples of 2 else the emulator will crash if pc + 1 > memSize. The last two bytes of each memory array contains a hard coded jump instruction to pc = 0
@@ -19,8 +20,10 @@ int main(int argc, char *argv[]) {
 	int execute = 1;
 	int mem = 0;
 
+	pthread_t cpuThread;//, deviceThread;
+
 	//Initialize
-	//initDevices((unsigned short*)dio);
+	initDevices((unsigned short*)dio);
 
 	for(unsigned int i = 0; i < romSize; i++) { //These are temporary
 		rom[i] = 0;
@@ -42,12 +45,15 @@ int main(int argc, char *argv[]) {
 	fread(rom, dataSize, 1, data);
 	fclose(data);
 
+	pthread_create(cpuThread, NULL, &execInstr, (unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
+
 	//Loop
 	while(execute) {
-		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
-		//updateDevices((unsigned short*)dio, &regs[3], &execute);
+		//execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
+		updateDevices((unsigned short*)dio, &regs[3], &execute);
 	}
 	
+	pthread_exit(NULL);
 	end();
 
 	return 0;
