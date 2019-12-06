@@ -168,6 +168,7 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 			break;
 		}
 		case 0x17: { //jze
+			//printf("%i\n", (mode));
 			if((mode & 0b01)? !(regs[3] & 0b0000100) : (regs[3] & 0b0000100)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
 				jumped = 1;

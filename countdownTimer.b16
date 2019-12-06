@@ -16,12 +16,14 @@ dat g2; 1000
 	
 	div g1, g2
 	deb acc
+	//deb g1
 	
 	mov g1, tmp
-	cmp 0
-	jal #loop
+	cmp 300
+	jnal #end
+	jmp #loop
 
-hlt
+#end: hlt
 
 /*dat g1; 4000
 dat g2; 1000
