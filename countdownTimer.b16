@@ -1,4 +1,4 @@
-//Countdown timer v2 (v3)
+//Countdown timer v3
 
 dat g1; 4000 //total milliseconds
 dat g2; 1000
@@ -16,7 +16,6 @@ dat g2; 1000
 	
 	div g1, g2
 	deb acc
-	//deb g1
 	
 	mov g1, tmp
 	cmp 300
@@ -25,7 +24,9 @@ dat g2; 1000
 
 #end: hlt
 
-/*dat g1; 4000
+/*//Countdown timer v2
+
+dat g1; 4000
 dat g2; 1000
 dat g3; 100
 

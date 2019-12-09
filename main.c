@@ -20,13 +20,6 @@ unsigned char rom[1024];
 unsigned short regs[16];
 unsigned short dio[16];
 
-pthread_t cpuThread;//, deviceThread;
-
-void *cpuUpdateWrapper() {
-	execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
-	return NULL;
-}
-
 int main(int argc, char *argv[]) {
 	//Initialize
 	initDevices((unsigned short*)dio);
@@ -44,18 +37,12 @@ int main(int argc, char *argv[]) {
 	fread(rom, dataSize, 1, data);
 	fclose(data);
 
-	//pthread_create(&cpuThread, NULL, &cpuUpdateWrapper, NULL);
-	//char buffer[8192];
-
-	//setvbuf(stdout, buffer, _IOFBF, sizeof(buffer));
 	//Loop
 	while(execute) {
 		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
 		updateDevices((unsigned short*)dio, &regs[3], &execute);
-		//pthread_join(cpuThread, NULL);
 	}
 	
-	//pthread_exit(NULL);
 	end();
 
 	return 0;
