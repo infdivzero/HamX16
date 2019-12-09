@@ -24,7 +24,7 @@ dat g2; 1000
 
 #end: hlt
 
-/*//Countdown timer v2
+/*Countdown timer v2
 
 dat g1; 4000
 dat g2; 1000
