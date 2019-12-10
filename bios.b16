@@ -1,4 +1,1 @@
-dat g1; 123
-
-//This next comment requires a ; to be placed before it for proper assembly
-#loop: deb g1//; jmp #loop
+//aaa aa a a  aaaa	aa $ this comment crashes b16a because it does not take existing $s into account. I will add a piece of code which converts existing $s into __LINECOUNTER__ tokens
