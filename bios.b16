@@ -1,1 +1,1 @@
-//aaa aa a a  aaaa	aa $ this comment crashes b16a because it does not take existing $s into account. I will add a piece of code which converts existing $s into __LINECOUNTER__ tokens
+dat g1; 0xFFFF; #loop: deb g1; jmp #loop; hlt
