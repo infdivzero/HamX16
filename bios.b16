@@ -1,1 +1,27 @@
-dat g1; 0xFFFF; #loop: deb g1; jmp #loop; hlt
+//dat g1; 0xFFFF; #loop: deb g1; jmp #loop; hlt
+
+//Countdown timer v3
+
+dat g1; 4000 //total milliseconds
+dat g2; 1000
+
+#loop:
+	mov tim, tmp
+	cmp 0
+	jeq #skip
+	
+	sub g1, tim
+	mov acc, g1
+	clr tim
+	
+	#skip:
+	
+	div g1, g2
+	deb acc
+	
+	mov g1, tmp
+	cmp 300
+	jnal #end
+	jmp #loop
+
+#end: hlt
