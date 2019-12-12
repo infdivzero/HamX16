@@ -12,13 +12,14 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 	unsigned short imm;
 	int jumped = 0;
 
-	//Reset constants
-	regs[5] = 1;
+	//Update special registers
+	regs[5] = 1; //one register
 
 	lmilli = milli;
 	milli = clock();
-	if(milli > lmilli) regs[6]++;
+	if(milli > lmilli) regs[6]++; //tim register
 
+	//Constant return jumps at the end of both memory sources prevents access violations if the pc goes above the size of the memory before wrapping to 0
 	ram[ramSize - 2] = (0b10 << 6) | 20 << 1;
 	ram[ramSize - 1] = 0;
 	rom[romSize - 2] = (0b10 << 6) | 20 << 1;
@@ -55,7 +56,8 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 		}
 		case 0x04: { //mem
 			*mem = !(*mem);
-			regs[0] = 0;
+			regs[0] = (mode >> 1)? imm : regs[arg1];
+			jumped = 1;
 			break;
 		}
 		case 0x05: { //mov/m
@@ -72,7 +74,7 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 			break;
 		}
 		case 0x07: { //svd
-			if(mem && regs[arg2] < ramSize - 1) {
+			if(regs[arg2] < ramSize - 1) {
 				ram[regs[arg2]] = regs[arg1] >> 8;
 				ram[regs[arg2] + 1] = regs[arg1] & 0xFF;
 			}
@@ -213,7 +215,6 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 		}
 		case 0x1E: { //deb
 			printf("%i\n", regs[arg1]);
-			//printf("%i %i\n", ram[2], ram[3]);
 			fflush(stdout);
 			break;
 		}

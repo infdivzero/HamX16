@@ -45,7 +45,7 @@ struct Gpu {
 	 * No programmable "shaders", fancy image processing is handled by cpu
 	 * The vram is divided into 2 framebuffers, and 2 texture buffers. Either or both texture buffers can be used to contain fonts
 	 * Access to every byte in vram can be achieved by setting the memory segement register to the 64kb segment to be accessed and accessing it like a normal piece of memory
-	 * Stream mode can be used to repeatedly copy data from the io register to a location in memory. This is pointed to be a register which is incremented each cycle. The gpu doesn't execute instructions during this time
+	 * Stream mode can be used to repeatedly copy data from the io register to a location in memory. This is pointed to by a register which is incremented each cycle. The gpu doesn't execute instructions during this time
 	 */
 
 	/*Registers:

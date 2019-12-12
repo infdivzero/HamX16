@@ -5,11 +5,10 @@
 #include <stdio.h>
 #include <pthread.h>
 
-
 int execute = 1;
 int mem = 0;
 
-//keep the memory sizes as multiples of 2 else the emulator will crash if pc + 1 > memSize. The last two bytes of each memory array contains a hard coded jump instruction to pc = 0
+//keep the memory sizes as multiples of 2 else the emulator will crash if pc + 1 > memSize. The last two bytes of each memory array contains a hard coded jump instruction to pc = 0 to prevent access violations
 unsigned int ramSize = 2048;
 unsigned int romSize = 1024;
 unsigned int regCount = 16;
