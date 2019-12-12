@@ -40,6 +40,19 @@ struct Gpu {
 	unsigned char regs[16];
 	SDL_Texture *buffer;
 
+	/*New gpu specifications
+	 * -bus connects to buffer processor
+	 * -buffer processor determines if stream instruction or gpu instruction
+	 * -if stream instruction, data is streamed to vram and gpu is halted
+	 * -if gpu instruction, the gpu executes it
+	 * -a display adapter (implemented as SDL) controlled by the gpu renders data directly from the section
+	 * 	of vram designated as the framebuffer. The adapter has its own registers used to set resolution,
+	 * 	framebuffer address, and other important "settings"
+	 * -the gpu can be programmed? Text rendering may need this for carriage return, etc.
+	 * -resolution scaling can be achieved by repeating pixel renderings based on resolution and display
+	 *  scale by the adapter, if implemented
+	 */
+
 	/*640x400 color gpu
 	 * 4 mb of vram
 	 * No programmable "shaders", fancy image processing is handled by cpu
