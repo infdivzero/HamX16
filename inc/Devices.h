@@ -19,6 +19,7 @@
  * 	-similar to the harddisk, but a binary file can be dynamically loaded from a folder when the user inputs a specific key combo which mounts and unmounts the file
  * dio hub (controller)
  * 	-is responsible for "managing" the other devices. Can be considered a south bridge
+ * 	-to be split up into timed sections to emulate bus timing
  */
 
 //The DIO device bus has a total of 18 bits, the first two are used for selection and interrupt signaling while the other 16 bits are fully accessible via a normal 16 bit register. The signal bits are controlled
@@ -32,57 +33,47 @@ SDL_Window *win;
 SDL_Renderer *ren;
 SDL_Event ev;
 
-const unsigned int resW = 640, resH = 400;
+const unsigned int resW = 800, resH = 600;
 
 //Device data
 struct Gpu {
-	unsigned char vram[4096000 /* 640 * 400 * 4 * 4 */]; //total resolution area * buffer count. bufferAccess = ((buffer + 1) * (y * resW + x)). 32 kilobytes
+	unsigned char vram[8388480]; //max res of 800x600, rgba, and 4 pages. Maxmum address scale of 65535 and 128 pages. 8.39mb
 	unsigned char regs[16];
 	SDL_Texture *buffer;
 
-	/*New gpu specifications
+	/*Graphics card specifications
 	 * -bus connects to buffer processor
 	 * -buffer processor determines if stream instruction or gpu instruction
 	 * -if stream instruction, data is streamed to vram and gpu is halted
 	 * -if gpu instruction, the gpu executes it
-	 * -a display adapter (implemented as SDL) controlled by the gpu renders data directly from the section
+	 * -a display adapter (implemented in SDL) controlled by the gpu renders data directly from the section
 	 * 	of vram designated as the framebuffer. The adapter has its own registers used to set resolution,
 	 * 	framebuffer address, and other important "settings"
-	 * -the gpu can be programmed? Text rendering may need this for carriage return, etc.
+	 * -the gpu can be programmed?
 	 * -resolution scaling can be achieved by repeating pixel renderings based on resolution and display
 	 *  scale by the adapter, if implemented
 	 */
 
-	/*640x400 color gpu
-	 * 4 mb of vram
-	 * No programmable "shaders", fancy image processing is handled by cpu
-	 * The vram is divided into 2 framebuffers, and 2 texture buffers. Either or both texture buffers can be used to contain fonts
-	 * Access to every byte in vram can be achieved by setting the memory segement register to the 64kb segment to be accessed and accessing it like a normal piece of memory
-	 * Stream mode can be used to repeatedly copy data from the io register to a location in memory. This is pointed to by a register which is incremented each cycle. The gpu doesn't execute instructions during this time
-	 */
-
-	/*Registers:
+	/*GPU registers:
 	 * -tmp
-	 * -buf: selects which virtual buffer is to be displayed
+	 * -buf: contains the memoy address for the render buffer which is to be displayed
 	 * -rsw: display resolution width
-	 * -rsh: display resolution height														buffsize = rsw * rsh * 4
+	 * -rsh: display resolution height							buffsize = rsw * rsh * 4
+	 *Buffer processor registers:
+	 * -spt: stream memory pointer, incremented each stream cycle
+	 * -spg: stream memory page pointer, incremented each spt cycle
 	 * -typ: constant register which stores the device type ID
-	 * -stp: stream memory pointer, incremented each stream cycle
-	 * -sbt: number of bytes to stream, inaccessable 32 bit register used by stream mode
+	 * -a pair of hidden registers are used to store the current page and address for streaming
 	 */
 
-	/*Instructions:
-	 * -mov arg1, arg2		 - moves register 1 to register 2
-	 * -gpx arg1, arg2 		 - moves four bytes at vram address arg1, arg2 to the rg and ba registers. The first bit of arg1 is unused
-	 * -spx arg1, arg2 		 - replaces four bytes at vram address arg1, arg2 with the contents of the rg and ba registers. The first bit of arg1 is unused
-	 * -cpy arg1, arg2		 - copies mem at arg1 to mem at arg2. The size register is used to specify the number of bytes to be copied
-	 * -str arg1, arg2		 - begins stream mode. The first bit of arg1 specifies if the stream will be to or from the gpu, while the remaining bits and arg2 specify the raw vram address from which to begin streaming. The stp register points to the last bytye in memory to finish streaming from/to. It is also incremented each cycle the gpu is in stream mode
-	 * -rst					 - sets all internal registers to zero
+	/*GPU instructions:
+	 * -mov arg1, arg2 - moves register 1 to register 2
+	 * -gpx arg1, arg2 - moves four bytes at vram address arg1, arg2 to the rg and ba registers. The first bit of arg1 is unused
+	 * -spx arg1, arg2 - replaces four bytes at vram address arg1, arg2 with the contents of the rg and ba registers. The first bit of arg1 is unused
+	 * -clr	arg1	   - sets the specified internal register to zero
+	 *Buffer processor instructions:
+	 * -str arg1, arg2 - begins streaming. arg1 specifies the start page and arg2 specifies the start address. The stream pointers specify the page and address to stop at
 	 */
-
-	//Buffer pages are arbitrary now and no longer part of the gpu
-	//any resolution up to a maximum can be specified
-	//Render offset can be specified by a register and render area is specified by the resolution. Resolution also scales the output. Dynamically scaling a texture like this will be difficult, please consider this
 } gpu;
 
 //Device initialization funtions
