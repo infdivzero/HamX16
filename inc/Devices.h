@@ -33,11 +33,11 @@ SDL_Window *win;
 SDL_Renderer *ren;
 SDL_Event ev;
 
-const unsigned int resW = 800, resH = 600;
+const unsigned int resW = 640, resH = 360;
 
 //Device data
 struct Gpu {
-	unsigned char vram[8388480]; //max res of 800x600, rgba, and 4 pages. Maxmum address scale of 65535 and 128 pages. 8.39mb
+	unsigned char vram[8388608]; //max res of rgba 800x600 and 4 render buffers. Maxmum address space of 65535 per one page of 128 pages. 8.39mb
 	unsigned char regs[16];
 	SDL_Texture *buffer;
 
@@ -47,21 +47,21 @@ struct Gpu {
 	 * -if stream instruction, data is streamed to vram and gpu is halted
 	 * -if gpu instruction, the gpu executes it
 	 * -a display adapter (implemented in SDL) controlled by the gpu renders data directly from the section
-	 * 	of vram designated as the framebuffer. The adapter has its own registers used to set resolution,
+	 * 	of vram designated as the render buffer. The adapter has its own registers used to set resolution,
 	 * 	framebuffer address, and other important "settings"
 	 * -the gpu can be programmed?
-	 * -resolution scaling can be achieved by repeating pixel renderings based on resolution and display
-	 *  scale by the adapter, if implemented
+	 * -resolution scaling can be achieved by recreating the texture with the set render resolution. The
+	 * 	display resolution will be a fixed value, unless emulator settings are to be implemented
 	 */
 
 	/*GPU registers:
+	 * -pc
+	 * -acc
 	 * -tmp
-	 * -buf: contains the memoy address for the render buffer which is to be displayed
-	 * -rsw: display resolution width
-	 * -rsh: display resolution height							buffsize = rsw * rsh * 4
+	 * -buf: contains the memory address for the render buffer which is to be displayed
 	 *Buffer processor registers:
-	 * -spt: stream memory pointer, incremented each stream cycle
-	 * -spg: stream memory page pointer, incremented each spt cycle
+	 * -spt: stream memory pointer, specifies the end address space of a stream in vram
+	 * -spg: stream memory page pointer, specifies the end address page of a stream in vram
 	 * -typ: constant register which stores the device type ID
 	 * -a pair of hidden registers are used to store the current page and address for streaming
 	 */
@@ -71,8 +71,17 @@ struct Gpu {
 	 * -gpx arg1, arg2 - moves four bytes at vram address arg1, arg2 to the rg and ba registers. The first bit of arg1 is unused
 	 * -spx arg1, arg2 - replaces four bytes at vram address arg1, arg2 with the contents of the rg and ba registers. The first bit of arg1 is unused
 	 * -clr	arg1	   - sets the specified internal register to zero
+	 * -srs	arg1, arg2 - sets the resolution to the one specified by arg1 and arg2
 	 *Buffer processor instructions:
 	 * -str arg1, arg2 - begins streaming. arg1 specifies the start page and arg2 specifies the start address. The stream pointers specify the page and address to stop at
+	 */
+
+	/*To initialize gpu in B16:
+	 * 1. set rsw and rsh registers to resolution
+	 * 2. set buf register to the address of the first byte to be used by the buffer
+	 * 3. if required, store the address for another buffer somewhere and repeat until no more render buffers are needed
+	 * 4. set the stream pointers to the size of the data to stream + memory offset. The offset should be after the size of the last buffer + its offset
+	 * 5. set cpu registers for the start page and address of the vram for streaming and stream the data
 	 */
 } gpu;
 

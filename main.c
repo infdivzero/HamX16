@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
 	fseek(data, 0, SEEK_END);
 	unsigned int dataSize = ftell(data);
 	fseek(data, 0, SEEK_SET);
+	//resize rom here according to size of file?
 	fread(rom, dataSize, 1, data);
 	fclose(data);
 
