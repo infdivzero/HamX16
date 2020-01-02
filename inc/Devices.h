@@ -227,7 +227,7 @@ void initDevices(unsigned short *dio) {
 	init_gpu();
 }
 
-void updateDevices(unsigned short *dio, unsigned short *flgReg, int *execute) {
+void updateDevices(unsigned short *dio, unsigned short *regs, int *execute) {
 	SDL_PollEvent(&ev);
 	switch(ev.type) {
 		case SDL_QUIT: {
@@ -243,7 +243,9 @@ void updateDevices(unsigned short *dio, unsigned short *flgReg, int *execute) {
 	
 	SDL_RenderPresent(ren);
 
-	*flgReg |= 0;
+	//Clear intrrupt bits
+	regs[3] &= 0b1111111101111111;
+	regs[4]  = 0;
 }
 
 void end() {

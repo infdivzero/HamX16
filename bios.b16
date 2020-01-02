@@ -6,12 +6,14 @@ dat g2; 1000
 dat g3; 123
 
 //Store some stuff in ram
-dat g4; deb g3 //instruction
-dat g5; 0x0002 //address in ram
+dat g4; deb g3
+dat g5; 0x0002
 svd g4, g5
 dat g4; mem #cont
 dat g5; 0x0004
 svd g4, g5
+
+0b0011111000000000
 
 #loop:
 	mov tim, tmp

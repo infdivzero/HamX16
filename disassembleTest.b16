@@ -1,0 +1,23 @@
+dat g1; 0x0fa0
+dat g2; 0x03e8
+dat g3; 0x007b
+dat g4; 0x3cd0
+dat g5; 0x0002
+svd g4, g5
+dat g4; 0x882e
+dat g5; 0x0004
+svd g4, g5
+mov tim, tmp
+cmp 0
+jeq 44
+sub g1, tim
+mov acc, g1
+clr tim
+mem 0
+div g1, g2
+deb acc
+mov g1, tmp
+cmp 300
+jnal 58
+jmp 32
+hlt
