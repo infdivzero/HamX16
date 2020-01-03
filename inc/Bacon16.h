@@ -6,7 +6,7 @@
 #include <time.h>
 
 void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, unsigned char *rom, unsigned int ramSize, unsigned int romSize, int *mem, int *execute) {
-	static unsigned char lmilli = 0;
+	static unsigned char lmilli = 0; //Move variables outside for better performance
 	static unsigned char milli = 0;
 	unsigned char mode, opcode, arg1, arg2, lByte, rByte;
 	unsigned short imm;
@@ -85,7 +85,8 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 			regs[arg1] = *mem? ((ram[regs[0]] << 8) | ram[regs[0] + 1]) : ((rom[regs[0]] << 8) | rom[regs[0] + 1]);
 			break;
 		}
-		case 0x09: { //c/add
+		case 0x09: { //c/add - the way an arg1/arg2 instruction can work with the alu is by connecting the registers to the alu with two buses
+			//modify to allow "add b to a and set a to result"
 			regs[1] = (mode >> 1)? (regs[2] + imm) : (regs[arg1] + regs[arg2]);
 			if(mode & 0b01) regs[1] = ~regs[1] + 1;
 			break;
@@ -216,6 +217,12 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 		case 0x1E: { //deb
 			printf("%i\n", regs[arg1]);
 			fflush(stdout);
+			break;
+		}
+		case 0x1F: { //ram dump
+			FILE *data = fopen("ram.bin", "wb");
+			fwrite(ram, ramSize, 1, data);
+			fclose(data);
 			break;
 		}
 	}
