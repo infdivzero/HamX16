@@ -8,9 +8,8 @@
 
 #include <Bacon16.h>
 #include <Devices.h>
-
+#include <ini.h>
 #include <stdio.h>
-#include <pthread.h>
 
 int execute = 1;
 int mem = 0;
@@ -25,17 +24,39 @@ unsigned int dioCount = 16;
 unsigned char *ram;
 unsigned char *rom;
 unsigned short *regs;
-unsigned short *dio[16];
+unsigned short *dio;
+
+void initA() {
+	printf("%s\n", "initA");
+}
+
+void initB() {
+	printf("%s\n", "initB");
+}
 
 int main(int argc, char *argv[]) {
-	initDevices((unsigned short*)dio);
+//	char *a = "ab";
+//	char *b = "cde";
+//	char *c = NULL;
+//	c = calloc(strlen(a) - 1 + strlen(b) - 1, 1);
+//	for(unsigned int i = 0; i < strlen(a); i++) c[i] = a[i];
+//	for(unsigned int i = 0; i < strlen(b); i++) c[i + strlen(a)] = b[i];
+//	printf("%i\n", (int)strlen(a));
+//	printf("%i\n", (int)strlen(b));
+//	printf("%s\n", c);
+//	free(c);
 
 	//Load config
+	ini_t *cfg = ini_load("cfg.ini");
+	ini_sget(cfg, "emulator", "ramSize", "%i", &ramSize);
+	ini_sget(cfg, "emulator", "romSize", "%i", &romSize);
+	ini_sget(cfg, "emulator", "deviceBuffers", "%i", &dioCount);
 
 	//Allocate memory
-	ram = calloc(ramSize, 1);
-	rom = calloc(romSize, 1);
-	regs = calloc(regCount, 1);
+	ram  = calloc(ramSize, 1);
+	rom  = calloc(romSize, 1);
+	regs = calloc(regCount, 2);
+	dio  = calloc(dioCount, 2);
 
 	//Load rom
 	FILE *data = fopen("rom.bin", "rb");
@@ -45,14 +66,22 @@ int main(int argc, char *argv[]) {
 	fread(rom, dataSize, 1, data);
 	fclose(data);
 
+	initDevices((unsigned short*)dio, dioCount, cfg);
+	ini_free(cfg);
+
 	//Loop
 	while(execute) {
 		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
 		updateDevices((unsigned short*)dio, (unsigned short*)regs, &execute);
 	}
-	
+
+	//Free up memory
+	free(ram);
 	free(rom);
-	end();
+	free(regs);
+	free(dio);
+
+	unloadDevices();
 
 	return 0;
 }

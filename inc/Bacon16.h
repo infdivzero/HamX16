@@ -5,19 +5,21 @@
 #include <stdio.h>
 #include <time.h>
 
-void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, unsigned char *rom, unsigned int ramSize, unsigned int romSize, int *mem, int *execute) {
-	static unsigned char lmilli = 0; //Move variables outside for better performance
-	static unsigned char milli = 0;
-	unsigned char mode, opcode, arg1, arg2, lByte, rByte;
-	unsigned short imm;
-	int jumped = 0;
+unsigned char lmilli = 0;
+unsigned char milli = 0;
+unsigned char mode, opcode, arg1, arg2, lByte, rByte;
+unsigned short imm;
+int jumped = 0;
 
-	//Update special registers
+void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, unsigned char *rom, unsigned int ramSize, unsigned int romSize, int *mem, int *execute) {
+	jumped = 0;
+
+	//Update one and tim registers
 	regs[5] = 1; //one register
 
-	lmilli = milli;
 	milli = clock();
-	if(milli > lmilli) regs[6]++; //tim register
+	if(milli - lmilli > 0) regs[6] += milli - lmilli; //tim register - may need fixing later
+	lmilli = milli;
 
 	//Constant return jumps at the end of both memory sources prevents access violations if the pc goes above the size of the memory before wrapping to 0
 	ram[ramSize - 2] = (0b10 << 6) | 20 << 1;
