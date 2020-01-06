@@ -1,25 +1,26 @@
-//Countdown timer v3
+//Countdown v3
 
-dat g1; 4000 //total milliseconds
-dat g2; 1000
+dat g1; 3000 //total milliseconds
+dat g2; 3000 //original value
+dat g3; 1000
 
 #loop:
 	mov tim, tmp
-	cmp 0
-	jeq #skip
-	
 	sub g1, tim
 	mov acc, g1
 	clr tim
 	
-	#skip:
+	mov g1, tmp
+	cmp 0
+	jnal #end
 	
-	div g1, g2
+	cmp g1, g2
+	jal #end
+	
+	div g1, g3
+	add acc, one
 	deb acc
 	
-	mov g1, tmp
-	cmp 300
-	jnal #end
 	jmp #loop
 
 #end: hlt

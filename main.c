@@ -1,15 +1,18 @@
 //Bacon-16: Core
 
 /*ToDo:
- * -implement configuration file loader
- * -implement device plugin dll loader
- * -the configuartion file can specify memory sizes and other emulator settings
+ * -implement CPU and device timing
+ * -this will allow the devices to "run slower" than the CPU and will allow for configurable clock speeds
+ * -certain functions such as the millisecond timer may need to be updated separately for better accuracy
  */
 
 #include <Bacon16.h>
 #include <Devices.h>
 #include <ini.h>
+#include <time.h>
 #include <stdio.h>
+
+char *ver = "v1.10.67(a)";
 
 int execute = 1;
 int mem = 0;
@@ -26,26 +29,10 @@ unsigned char *rom;
 unsigned short *regs;
 unsigned short *dio;
 
-void initA() {
-	printf("%s\n", "initA");
-}
-
-void initB() {
-	printf("%s\n", "initB");
-}
+unsigned char lmilli = 0;
+unsigned char milli = 0;
 
 int main(int argc, char *argv[]) {
-//	char *a = "ab";
-//	char *b = "cde";
-//	char *c = NULL;
-//	c = calloc(strlen(a) - 1 + strlen(b) - 1, 1);
-//	for(unsigned int i = 0; i < strlen(a); i++) c[i] = a[i];
-//	for(unsigned int i = 0; i < strlen(b); i++) c[i + strlen(a)] = b[i];
-//	printf("%i\n", (int)strlen(a));
-//	printf("%i\n", (int)strlen(b));
-//	printf("%s\n", c);
-//	free(c);
-
 	//Load config
 	ini_t *cfg = ini_load("cfg.ini");
 	ini_sget(cfg, "emulator", "ramSize", "%i", &ramSize);
@@ -71,6 +58,10 @@ int main(int argc, char *argv[]) {
 
 	//Loop
 	while(execute) {
+		lmilli = milli;
+		milli = clock();
+		if(milli - lmilli > 0) regs[6] += milli - lmilli; //tim register
+
 		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
 		updateDevices((unsigned short*)dio, (unsigned short*)regs, &execute);
 	}

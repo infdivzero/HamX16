@@ -4,8 +4,6 @@
 
 //ToDo: implement external lib loader for Linux
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_audio.h>
 #include <ini.h>
 #include <windows.h>
 #include <math.h>

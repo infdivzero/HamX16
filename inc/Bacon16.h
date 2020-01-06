@@ -3,23 +3,14 @@
 #define BACON16_H
 
 #include <stdio.h>
-#include <time.h>
 
-unsigned char lmilli = 0;
-unsigned char milli = 0;
 unsigned char mode, opcode, arg1, arg2, lByte, rByte;
 unsigned short imm;
 int jumped = 0;
 
 void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, unsigned char *rom, unsigned int ramSize, unsigned int romSize, int *mem, int *execute) {
 	jumped = 0;
-
-	//Update one and tim registers
 	regs[5] = 1; //one register
-
-	milli = clock();
-	if(milli - lmilli > 0) regs[6] += milli - lmilli; //tim register - may need fixing later
-	lmilli = milli;
 
 	//Constant return jumps at the end of both memory sources prevents access violations if the pc goes above the size of the memory before wrapping to 0
 	ram[ramSize - 2] = (0b10 << 6) | 20 << 1;
@@ -87,8 +78,8 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 			regs[arg1] = *mem? ((ram[regs[0]] << 8) | ram[regs[0] + 1]) : ((rom[regs[0]] << 8) | rom[regs[0] + 1]);
 			break;
 		}
-		case 0x09: { //c/add - the way an arg1/arg2 instruction can work with the alu is by connecting the registers to the alu with two buses
-			//modify to allow "add b to a and set a to result"
+		case 0x09: { //c/add - the way an arg1/arg2 instruction can work with the alu is by connecting the registers to the alu with two buses "on either side of the registers"
+			//modify to allow "add b to a and set a to result"?
 			regs[1] = (mode >> 1)? (regs[2] + imm) : (regs[arg1] + regs[arg2]);
 			if(mode & 0b01) regs[1] = ~regs[1] + 1;
 			break;
@@ -173,7 +164,6 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 			break;
 		}
 		case 0x17: { //jze
-			//printf("%i\n", (mode));
 			if((mode & 0b01)? !(regs[3] & 0b0000100) : (regs[3] & 0b0000100)) {
 				regs[0] = (mode >> 1)? imm : regs[arg1];
 				jumped = 1;
