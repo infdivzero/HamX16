@@ -57,9 +57,8 @@ void initDevices(unsigned short *dio, unsigned int dioCount, ini_t *cfg) {
 	}
 
 	for(unsigned int i = 0; i < initCount && inits[i]; i++) {
-		inits[i](cfg, nextDIO);
+		if(nextDIO + 1 < dioCount) inits[i](cfg, nextDIO);
 		nextDIO++;
-		if(nextDIO > dioCount) nextDIO = 0; //the user must be aware of the number of devices to load and the number of possible devices
 	}
 }
 
