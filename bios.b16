@@ -24,3 +24,8 @@ dat g3; 1000
 	jmp #loop
 
 #end: hlt
+
+#data:
+	dat tmp; 123
+	deb tmp
+	mem #loop
