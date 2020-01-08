@@ -78,29 +78,38 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 			regs[arg1] = *mem? ((ram[regs[0]] << 8) | ram[regs[0] + 1]) : ((rom[regs[0]] << 8) | rom[regs[0] + 1]);
 			break;
 		}
-		case 0x09: { //c/add - the way an arg1/arg2 instruction can work with the alu is by connecting the registers to the alu with two buses "on either side of the registers"
+		case 0x09: { //add/i - the way an arg1/arg2 instruction can work with the alu is by connecting the registers to the alu with two buses "on either side of the registers"
 			//modify to allow "add b to a and set a to result"?
-			regs[1] = (mode >> 1)? (regs[2] + imm) : (regs[arg1] + regs[arg2]);
-			if(mode & 0b01) regs[1] = ~regs[1] + 1;
+			if(mode & 0b01) {
+				regs[arg1] += regs[arg2];
+			} else regs[1] = (mode >> 1)? (regs[2] + imm) : (regs[arg1] + regs[arg2]);
+			//if(mode & 0b01) regs[1] = ~regs[1] + 1;
 			break;
 		}
-		case 0x0A: { //c/sub
-			regs[1] = (mode >> 1)? (regs[2] - imm) : (regs[arg1] - regs[arg2]);
-			if(mode & 0b01) regs[1] = ~regs[1] + 1;
+		case 0x0A: { //sub/d
+			if(mode & 0b01) {
+				regs[arg1] -= regs[arg2];
+			} else regs[1] = (mode >> 1)? (regs[2] - imm) : (regs[arg1] - regs[arg2]);
+			//if(mode & 0b01) regs[1] = ~regs[1] + 1;
 			break;
 		}
-		case 0x0B: { //c/mul
-			regs[1] = (mode >> 1)? (regs[2] * imm) : (regs[arg1] * regs[arg2]);
-			if(mode & 0b01) regs[1] = ~regs[1] + 1;
+		case 0x0B: { //mul/i
+			if(mode & 0b01) {
+				regs[arg1] *= regs[arg2];
+			} else regs[1] = (mode >> 1)? (regs[2] * imm) : (regs[arg1] * regs[arg2]);
+			//if(mode & 0b01) regs[1] = ~regs[1] + 1;
 			break;
 		}
-		case 0x0C: { //c/div
-			if(((mode >> 1)? imm : regs[arg2]) != 0) {
+		case 0x0C: { //div/d
+			if(mode & 0b01) {
+				regs[arg1] /= regs[arg2];
+			} else regs[1] = (((mode >> 1)? imm : regs[arg2]) != 0)? (mode >> 1)? (regs[2] / imm) : (regs[arg1] / regs[arg2]) : 0;
+			/* if(((mode >> 1)? imm : regs[arg2]) != 0) {
 				regs[1] = (mode >> 1)? (regs[2] / imm) : (regs[arg1] / regs[arg2]);
 			} else {
 				regs[1] = 0;
-			}
-			if(mode & 0b01) regs[1] = ~regs[1] + 1;
+			} */
+			//if(mode & 0b01) regs[1] = ~regs[1] + 1;
 			break;
 		}
 		case 0x0D: { //shl
