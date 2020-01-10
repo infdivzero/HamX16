@@ -6,6 +6,7 @@
 *.old
 /Debug/
 /.settings/
+/.vscode/
 *.cproject
 *.project
 test.b16
