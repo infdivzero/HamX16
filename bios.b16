@@ -1,31 +1,16 @@
-//Countdown v3
+nop; #a: deb g1; deb g2; jmp #a
 
-dat g1; 3000 //total milliseconds
-dat g2; 3000 //original value
-dat g3; 1000
+/*define BIOS_SIZE #_shadow
 
-#loop:
-	mov tim, tmp
-	sub g1, tim
-	mov acc, g1
-	clr tim
-	
-	mov g1, tmp
-	cmp 0
-	jnal #end
-	
-	cmp g1, g2
-	jal #end
-	
-	div g1, g3
-	add acc, one
-	deb acc
-	
-	jmp #loop
+jmp #_shadow
 
-#end: hlt
+#_biosData:
+	dat g1; 123
+	#loop:
+		deb g1
+		jmp #loop
 
-#data:
-	dat tmp; 123
-	deb tmp
-	mem #loop
+#_shadow:
+	dat g1; BIOS_SIZE
+	deb g1
+	jmp #_shadow*/

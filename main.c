@@ -12,7 +12,7 @@
 #include <time.h>
 #include <stdio.h>
 
-char *ver = "v1.10.67(a)";
+char *ver = "v1.12.68(a)";
 
 int execute = 1;
 int mem = 0;

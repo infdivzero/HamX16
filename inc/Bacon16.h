@@ -79,37 +79,23 @@ void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *ram, un
 			break;
 		}
 		case 0x09: { //add/i - the way an arg1/arg2 instruction can work with the alu is by connecting the registers to the alu with two buses "on either side of the registers"
-			//modify to allow "add b to a and set a to result"?
-			if(mode & 0b01) {
-				regs[arg1] += regs[arg2];
-			} else regs[1] = (mode >> 1)? (regs[2] + imm) : (regs[arg1] + regs[arg2]);
-			//if(mode & 0b01) regs[1] = ~regs[1] + 1;
+			if(mode & 0b01) regs[arg1] += regs[arg2];
+			else regs[1] = (mode >> 1)? (regs[2] + imm) : (regs[arg1] + regs[arg2]);
 			break;
 		}
 		case 0x0A: { //sub/d
-			if(mode & 0b01) {
-				regs[arg1] -= regs[arg2];
-			} else regs[1] = (mode >> 1)? (regs[2] - imm) : (regs[arg1] - regs[arg2]);
-			//if(mode & 0b01) regs[1] = ~regs[1] + 1;
+			if(mode & 0b01) regs[arg1] -= regs[arg2];
+			else regs[1] = (mode >> 1)? (regs[2] - imm) : (regs[arg1] - regs[arg2]);
 			break;
 		}
 		case 0x0B: { //mul/i
-			if(mode & 0b01) {
-				regs[arg1] *= regs[arg2];
-			} else regs[1] = (mode >> 1)? (regs[2] * imm) : (regs[arg1] * regs[arg2]);
-			//if(mode & 0b01) regs[1] = ~regs[1] + 1;
+			if(mode & 0b01) regs[arg1] *= regs[arg2];
+			else regs[1] = (mode >> 1)? (regs[2] * imm) : (regs[arg1] * regs[arg2]);
 			break;
 		}
 		case 0x0C: { //div/d
-			if(mode & 0b01) {
-				regs[arg1] /= regs[arg2];
-			} else regs[1] = (((mode >> 1)? imm : regs[arg2]) != 0)? (mode >> 1)? (regs[2] / imm) : (regs[arg1] / regs[arg2]) : 0;
-			/* if(((mode >> 1)? imm : regs[arg2]) != 0) {
-				regs[1] = (mode >> 1)? (regs[2] / imm) : (regs[arg1] / regs[arg2]);
-			} else {
-				regs[1] = 0;
-			} */
-			//if(mode & 0b01) regs[1] = ~regs[1] + 1;
+			if(mode & 0b01) regs[arg1] /= regs[arg2];
+			else regs[1] = (((mode >> 1)? imm : regs[arg2]) != 0)? (mode >> 1)? (regs[2] / imm) : (regs[arg1] / regs[arg2]) : 0;
 			break;
 		}
 		case 0x0D: { //shl
