@@ -1,0 +1,4 @@
+#_shadow:
+	addi g1, one
+	deb g1
+	jmp #_shadow
