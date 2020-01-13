@@ -62,8 +62,8 @@ int main(int argc, char *argv[]) {
 		milli = clock();
 		if(milli - lmilli > 0) regs[6] += milli - lmilli; //tim register
 
-		execInstr((unsigned short*)regs, (unsigned short*)dio, (unsigned char*)ram, (unsigned char*)rom, ramSize, romSize, &mem, &execute);
-		updateDevices((unsigned short*)dio, (unsigned short*)regs, &execute);
+		execInstr(regs, dio, ram, rom, ramSize, romSize, &mem, &execute);
+		updateDevices(dio, &regs[3], &regs[4], &execute);
 	}
 
 	//Free up memory

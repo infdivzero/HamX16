@@ -1,13 +1,31 @@
-define BIOS_SIZE #_shadow
-define RAM_OFFSET 2
 define __SRCROOT__ "C:\Code Projects\VSCode Projects\C++\HamX16\examples\"
 
 jmp #_shadow
 
 #_biosData:
-	dat g1; 123
 	#loop:
-		deb g1
+		dat g1; 0b0000001000000000
+		dat g2; 0
+		sdr g1, g2
 		jmp #loop
 
-insert "libs\shadowCopy.b16"
+#_shadow:
+	dat g1; #_biosData
+	dat g2; #_shadow
+	dat g3; 2
+
+	#_shadowLoop:
+		movm g1, g3
+		
+		mov g1, tmp
+		add 2
+		mov acc, g1
+		
+		mov g3, tmp
+		add 2
+		mov acc, g3
+		
+		cmp g1, g2
+		jneq #_shadowLoop
+
+mem 0

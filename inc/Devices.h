@@ -60,12 +60,14 @@ void initDevices(unsigned short *dio, unsigned int dioCount, ini_t *cfg) {
 	}
 }
 
-void updateDevices(unsigned short *dio, unsigned short *regs, int *execute) {
+void updateDevices(unsigned short *dio, unsigned short *flgReg, unsigned short *intReg, int *execute) {
+	//implement a means to signal a device that its dio register has been modified by the CPU
+
 	for(unsigned int i = 0; i < updateCount && updates[i]; i++) updates[i](dio, execute);
 
 	//Clear interrupt bits
-	regs[3] &= 0b1111111101111111;
-	regs[4]  = 0;
+	*flgReg &= 0b1111111101111111;
+	*intReg  = 0;
 }
 
 void unloadDevices() {
