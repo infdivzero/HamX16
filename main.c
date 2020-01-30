@@ -27,7 +27,7 @@ unsigned int dioCount = 16;
 unsigned char *ram;
 unsigned char *rom;
 unsigned short *regs;
-unsigned short *dio;
+unsigned int *dio;
 
 unsigned char lmilli = 0;
 unsigned char milli = 0;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 	fread(rom, dataSize, 1, data);
 	fclose(data);
 
-	initDevices((unsigned short*)dio, dioCount, cfg);
+	initDevices(dio, dioCount, cfg);
 	ini_free(cfg);
 
 	//Loop
