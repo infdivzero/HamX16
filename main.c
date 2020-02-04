@@ -32,6 +32,8 @@ unsigned short *dio;
 unsigned char lmilli = 0;
 unsigned char milli = 0;
 
+unsigned char *deviceCalls;
+
 int main(int argc, char *argv[]) {
 	//Load config
 	ini_t *cfg = ini_load("cfg.ini");
@@ -53,7 +55,7 @@ int main(int argc, char *argv[]) {
 	fread(rom, dataSize, 1, data);
 	fclose(data);
 
-	initDevices((unsigned short*)dio, dioCount, cfg);
+	initDevices((unsigned short*)dio, &deviceCalls, dioCount, cfg);
 	ini_free(cfg);
 
 	//Loop
@@ -62,8 +64,8 @@ int main(int argc, char *argv[]) {
 		milli = clock();
 		if(milli - lmilli > 0) regs[6] += milli - lmilli; //tim register
 
-		execInstr(regs, dio, ram, rom, ramSize, romSize, &mem, &execute);
-		updateDevices(dio, &regs[3], &regs[4], &execute);
+		execInstr(regs, dio, deviceCalls, ram, rom, ramSize, romSize, dioCount, &mem, &execute);
+		updateDevices(dio, deviceCalls, &regs[3], &regs[4], &execute);
 	}
 
 	//Free up memory
@@ -72,7 +74,7 @@ int main(int argc, char *argv[]) {
 	free(regs);
 	free(dio);
 
-	unloadDevices();
+	unloadDevices(deviceCalls);
 
 	return 0;
 }
