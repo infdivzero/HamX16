@@ -1,13 +1,13 @@
-define __SRCROOT__ "C:\Code Projects\VSCode Projects\C++\HamX16\examples\"
+define __SRCROOT__ "C:\Code Projects\VS Code\C++\HamX16\examples\"
 
-jmp #_shadow
+jmp #_shadow //This instruction offsets the program and allows for a NULL variable
 
 #_biosData:
-	#loop:
-		dat g1; 0b0000001000000000
-		dat g2; 0
-		sdr g1, g2
-		jmp #loop
+	dat g1; 0b0000010000000000
+	dat g2; 0
+	sdr g1, g2
+
+	insert "countdownTimer.b16"
 
 #_shadow:
 	dat g1; #_biosData
