@@ -12,3 +12,4 @@
 test.b16
 *.bak
 /Release/
+reformatAsmToB16.txt

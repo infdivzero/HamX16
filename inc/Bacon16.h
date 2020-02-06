@@ -8,11 +8,7 @@ unsigned char mode, opcode, arg1, arg2, lByte, rByte;
 unsigned short imm;
 int jumped = 0;
 
-<<<<<<< HEAD
-void execInstr(unsigned short *regs, unsigned short *dio, unsigned char *deviceCalls, unsigned char *ram, unsigned char *rom, unsigned int ramSize, unsigned int romSize, unsigned int dioCount, int *mem, int *execute) {
-=======
 void execInstr(unsigned short *regs, unsigned int *dio, unsigned char *ram, unsigned char *rom, unsigned int ramSize, unsigned int romSize, int *mem, int *execute) {
->>>>>>> 365eb03646619be993817bebe5f071b2336d2fe6
 	jumped = 0;
 	regs[5] = 1; //one register
 
@@ -198,14 +194,7 @@ void execInstr(unsigned short *regs, unsigned int *dio, unsigned char *ram, unsi
 			break;
 		}
 		case 0x1C: { //sdr
-<<<<<<< HEAD
-			if(regs[arg2] < dioCount) {
-				dio[regs[arg2]] = regs[arg1];
-				deviceCalls[regs[arg2]] = 1;
-			}
-=======
 			dio[regs[arg2]] = (1 << 16) | regs[arg1];
->>>>>>> 365eb03646619be993817bebe5f071b2336d2fe6
 			break;
 		}
 		case 0x1D: { //gdr

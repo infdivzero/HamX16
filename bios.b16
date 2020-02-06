@@ -1,0 +1,29 @@
+define __SRCROOT__ "C:\Code Projects\VS Code\C++\HamX16\examples\"
+
+jmp #_shadow //This instruction offsets the program and allows for a NULL variable
+
+#_biosData:
+	dat g1; 123
+	deb g1
+	jmp #_biosData
+
+#_shadow:
+	dat g1; #_biosData
+	dat g2; #_shadow
+	dat g3; 2
+
+	#_shadowLoop:
+		movm g1, g3
+		
+		mov g1, tmp
+		add 2
+		mov acc, g1
+		
+		mov g3, tmp
+		add 2
+		mov acc, g3
+		
+		cmp g1, g2
+		jneq #_shadowLoop
+
+mem 0
