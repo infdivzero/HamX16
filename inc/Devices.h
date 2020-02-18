@@ -2,11 +2,31 @@
 #ifndef DEVICES_H
 #define DEVICES_H
 
-//ToDo: implement external lib loader for Linux
+#ifdef _WIN32
+	#include <windows.h>
+	HINSTANCE *devices;
+	#define MODTYPE HINSTANCE
+	#define loadLib(lib) (HINSTANCE)LoadLibrary(lib)
+	#define getInit(device) (init_t)GetProcAddress(device, "init")
+	#define getUpdate(device) (init_t)GetProcAddress(device, "update")
+	#define getUnload(device) (init_t)GetProcAddress(device, "unload")
+	#define closeLib(lib) FreeLibrary(lib)
+#elif __linux__
+	#include <dlfcn.h>
+	void **devices;
+	#define MODTYPE void*
+	#define loadLib(lib) dlopen(lib, RTLD_LAZY)
+	#define getInit(device) dlsym(device, "init")
+	#define getUpdate(device) dlsym(device, "update")
+	#define getUnload(device) dlsym(device, "unload")
+	#define closeLib(lib) dlclose(lib)
+#else
+	#error This operating system is not supported
+#endif
 
 #include <ini.h>
-#include <windows.h>
 #include <math.h>
+#include <stdlib.h>
 
 typedef void (*init_t)(ini_t*, unsigned int);
 typedef void (*update_t)(unsigned int*, int*);
@@ -15,7 +35,6 @@ typedef void (*unload_t)();
 init_t *inits;
 update_t *updates;
 unload_t *unloads;
-HINSTANCE *devices;
 
 unsigned int deviceCount = 0;
 unsigned int initCount = 0;
@@ -25,8 +44,8 @@ unsigned int nextDIO = 0; //perhaps replace this small system and the current HI
 
 //DIO functions
 void initDevices(unsigned int *dio, unsigned int dioCount, ini_t *cfg) {
-	devices = calloc(0, sizeof(HINSTANCE));
-	inits = calloc(1, sizeof(init_t));
+	devices = calloc(0, sizeof(MODTYPE));
+	inits   = calloc(1, sizeof(init_t));
 	updates = calloc(1, sizeof(update_t));
 	unloads = calloc(1, sizeof(unload_t));
 
@@ -38,18 +57,18 @@ void initDevices(unsigned int *dio, unsigned int dioCount, ini_t *cfg) {
 		if(module) {
 			deviceCount++;
 			devices = realloc(devices, deviceCount);
-			devices[deviceCount - 1] = (HINSTANCE)LoadLibrary(module);
+			devices[deviceCount - 1] = loadLib(module);
 
 			if(devices[deviceCount - 1]) {
 				initCount++;
 				inits = realloc(inits, initCount);
-				inits[initCount - 1] = (init_t)GetProcAddress(devices[deviceCount - 1], "init");
+				inits[initCount - 1] = getInit(devices[deviceCount - 1]);
 				updateCount++;
 				updates = realloc(updates, updateCount);
-				updates[updateCount - 1] = (update_t)GetProcAddress(devices[deviceCount - 1], "update");
+				updates[updateCount - 1] = getUpdate(devices[deviceCount - 1]);
 				unloadCount++;
 				unloads = realloc(unloads, unloadCount);
-				unloads[unloadCount - 1] = (unload_t)GetProcAddress(devices[deviceCount - 1], "unload");
+				unloads[unloadCount - 1] = getUnload(devices[deviceCount - 1]);
 			}
 		}
 	}
@@ -70,8 +89,7 @@ void updateDevices(unsigned int *dio, unsigned short *flgReg, unsigned short *in
 
 void unloadDevices() {
 	for(unsigned int i = 0; i < unloadCount && unloads[i]; i++) unloads[i]();
-
-	for(unsigned int i = 0; i < deviceCount; i++) FreeLibrary(devices[i]);
+	for(unsigned int i = 0; i < deviceCount; i++) closeLib(devices[i]);
 	free(devices);
 	free(inits);
 	free(updates);

@@ -1,6 +1,8 @@
 *.bat
 *.o
 *.dll
+*.so
+*.0
 *.exe
 *.bin
 *.old
@@ -13,3 +15,6 @@ test.b16
 *.bak
 /Release/
 reformatAsmToB16.txt
+bios.b16
+hamx16
+b16a
