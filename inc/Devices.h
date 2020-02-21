@@ -8,8 +8,8 @@
 	#define MODTYPE HINSTANCE
 	#define loadLib(lib) (HINSTANCE)LoadLibrary(lib)
 	#define getInit(device) (init_t)GetProcAddress(device, "init")
-	#define getUpdate(device) (init_t)GetProcAddress(device, "update")
-	#define getUnload(device) (init_t)GetProcAddress(device, "unload")
+	#define getUpdate(device) (update_t)GetProcAddress(device, "update")
+	#define getUnload(device) (unload_t)GetProcAddress(device, "unload")
 	#define closeLib(lib) FreeLibrary(lib)
 #elif __linux__
 	#include <dlfcn.h>
