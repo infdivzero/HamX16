@@ -24,13 +24,16 @@
 	#error This operating system is not supported
 #endif
 
-#include <ini.h>
+#include "SharedData.h"
+
 #include <math.h>
 #include <stdlib.h>
 
-typedef void (*init_t)(ini_t*, unsigned int);
-typedef void (*update_t)(unsigned int*, int*);
+typedef void (*init_t)(ini_t*, unsigned int, struct SData*);
+typedef void (*update_t)(unsigned int*, struct SData*);
 typedef void (*unload_t)();
+
+struct SData sharedData;
 
 init_t *inits;
 update_t *updates;
@@ -40,10 +43,13 @@ unsigned int deviceCount = 0;
 unsigned int initCount = 0;
 unsigned int updateCount = 0;
 unsigned int unloadCount = 0;
-unsigned int nextDIO = 0; //perhaps replace this small system and the current HINSTANCE handling with a struct containing HINSTANCE and its assigned dio port?
+unsigned int nextDIO = 0;
 
 //DIO functions
 void initDevices(unsigned int *dio, unsigned int dioCount, ini_t *cfg) {
+	SDL_Init(SDL_INIT_VIDEO);
+	sharedData.win = SDL_CreateWindow("HamX16", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
+
 	devices = calloc(0, sizeof(MODTYPE));
 	inits   = calloc(1, sizeof(init_t));
 	updates = calloc(1, sizeof(update_t));
@@ -51,7 +57,7 @@ void initDevices(unsigned int *dio, unsigned int dioCount, ini_t *cfg) {
 
 	for(unsigned int i = 0; i < dioCount; i++) {
 		char *module;
-		char device[5];
+		char device[6];
 		sprintf(device, "%i", i);
 		module = (char*)ini_get(cfg, "devices", device);
 		if(module) {
@@ -59,7 +65,7 @@ void initDevices(unsigned int *dio, unsigned int dioCount, ini_t *cfg) {
 			devices = realloc(devices, deviceCount);
 			devices[deviceCount - 1] = loadLib(module);
 
-			if(devices[deviceCount - 1]) {
+			if(devices[deviceCount - 1]) { //this could be made more efficient in case a function load fails
 				initCount++;
 				inits = realloc(inits, initCount);
 				inits[initCount - 1] = getInit(devices[deviceCount - 1]);
@@ -73,14 +79,21 @@ void initDevices(unsigned int *dio, unsigned int dioCount, ini_t *cfg) {
 		}
 	}
 
-	for(unsigned int i = 0; i < initCount && inits[i]; i++) {
-		if(nextDIO + 1 < dioCount) inits[i](cfg, nextDIO);
-		nextDIO++;
+	for(unsigned int i = 0; i < initCount; i++) {
+		if(nextDIO < dioCount) {
+			if(inits[i]) {
+				inits[i](cfg, nextDIO, &sharedData);
+				nextDIO++;
+			}
+		} else break;
 	}
 }
 
 void updateDevices(unsigned int *dio, unsigned short *flgReg, unsigned short *intReg, int *execute) {
-	for(unsigned int i = 0; i < updateCount && updates[i]; i++) updates[i](dio, execute);
+	SDL_PollEvent(&sharedData.ev);
+	if(sharedData.ev.type == SDL_QUIT) *execute = 0;
+
+	for(unsigned int i = 0; i < updateCount; i++) if(updates[i]) updates[i](dio, &sharedData);
 
 	//Clear interrupt bits
 	*flgReg &= 0b1111111101111111;
@@ -88,11 +101,13 @@ void updateDevices(unsigned int *dio, unsigned short *flgReg, unsigned short *in
 }
 
 void unloadDevices() {
-	for(unsigned int i = 0; i < unloadCount && unloads[i]; i++) unloads[i]();
+	for(unsigned int i = 0; i < unloadCount; i++) if(unloads[i]) unloads[i]();
 	for(unsigned int i = 0; i < deviceCount; i++) closeLib(devices[i]);
 	free(devices);
 	free(inits);
 	free(updates);
+	SDL_DestroyWindow(sharedData.win);
+	SDL_Quit();
 }
 
 #endif
