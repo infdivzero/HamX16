@@ -1,7 +1,9 @@
 # HamX16
-This is an emulator emulating a fictional instruction set and architecture. This system requires the Bacon-16 Assembler to program it and it is built modularly. On its own, HamX16 can perform basic CPU-related tasks and output register contents to the command line. To receive keyboard input and graphical text output without the use of the command line, the keyboard and text renderer extensions can be used. These have their own repository as "stock components."
+This is an emulator emulating a fictional instruction set and architecture. This system "boots" from a rom.bin file in its working directory and it is built modularly. On its own, HamX16 can perform basic CPU-related tasks and output register contents to the command line. To receive keyboard input and graphical text output without the use of the command line, the keyboard and text renderer extensions can be used. These have their own repository as "stock components."
 
-The operating system used with this emulator is contained in its own repository: (not yet available). The BIOS is also included.
+The operating system used with this emulator is contained in its own repository: (not yet available).
+
+To program the emulator, use a Bacon-16 assembler to create a rom.bin. The only Bacon-16 assembler is B16A which can be found at this [repository](https://github.com/turtleStew/B16A). A potentially faster assembler with a different syntax will eventually be developed.
 
 The "stock components" include:
  - text renderer
