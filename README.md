@@ -26,8 +26,5 @@ The "stock components" include:
  - Find and fix bugs
  - Implement logging for the core and device modules
 
-# Upcoming
-After I have written working versions of this and B16A (currently ~90% complete), I will write a compiler for a higher level language which compiles to b16 code. This language will either be C-like or similar to BASIC with support for writing b16 instructions directly into the source code, probably with each instruction following a symbol or enclosed in a pair of braces.
-
 # Releases
 After I have created a good working system build, I will put together release packages containing the HamX16 core, tools, and device extensions compiled for Windows and Linux.
